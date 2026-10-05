@@ -38,7 +38,7 @@ namespace melonDS
 class ComputeRenderer : public Renderer3D
 {
 public:
-    static std::unique_ptr<ComputeRenderer> New();
+    static std::unique_ptr<ComputeRenderer> New(GPU& gpu);
     ~ComputeRenderer() override;
 
     void Reset(GPU& gpu) override;
@@ -63,7 +63,7 @@ public:
     bool NeedsShaderCompile() override { return ShaderStepIdx != 33; }
     void ShaderCompileStep(int& current, int& count) override;
 private:
-    ComputeRenderer(GLCompositor&& compositor);
+    ComputeRenderer(GPU& gpu, GLCompositor&& compositor);
 
     GLuint ShaderInterpXSpans[2];
     GLuint ShaderBinCombined;

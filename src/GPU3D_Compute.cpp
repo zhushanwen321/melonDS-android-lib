@@ -30,8 +30,8 @@
 namespace melonDS
 {
 
-ComputeRenderer::ComputeRenderer(GLCompositor&& compositor)
-    : Renderer3D(true), Texcache(TexcacheOpenGLLoader()), CurGLCompositor(std::move(compositor))
+ComputeRenderer::ComputeRenderer(GPU& gpu, GLCompositor&& compositor)
+    : Renderer3D(true), Texcache(gpu, TexcacheOpenGLLoader(true)), CurGLCompositor(std::move(compositor))
 {}
 
 bool ComputeRenderer::CompileShader(GLuint& shader, const std::string& source, const std::initializer_list<const char*>& defines)
@@ -204,13 +204,13 @@ void blah(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length
     printf("%s\n", message);
 }
 
-std::unique_ptr<ComputeRenderer> ComputeRenderer::New()
+std::unique_ptr<ComputeRenderer> ComputeRenderer::New(GPU& gpu)
 {
     std::optional<GLCompositor> compositor =  GLCompositor::New();
     if (!compositor)
         return nullptr;
 
-    std::unique_ptr<ComputeRenderer> result = std::unique_ptr<ComputeRenderer>(new ComputeRenderer(std::move(*compositor)));
+    std::unique_ptr<ComputeRenderer> result = std::unique_ptr<ComputeRenderer>(new ComputeRenderer(gpu, std::move(*compositor)));
 
     //glDebugMessageCallback(blah, NULL);
     //glEnable(GL_DEBUG_OUTPUT);
@@ -643,7 +643,8 @@ struct Variant
 void ComputeRenderer::RenderFrame(GPU& gpu)
 {
     assert(!NeedsShaderCompile());
-    if (!Texcache.Update(gpu) && gpu.GPU3D.RenderFrameIdentical)
+    u8 clrBitmapDirty;
+    if (!Texcache.Update(clrBitmapDirty) && gpu.GPU3D.RenderFrameIdentical)
     {
         return;
     }
@@ -703,7 +704,7 @@ void ComputeRenderer::RenderFrame(GPU& gpu)
             // we always need to look up the texture to get the layer of the array texture
             if (enableTextureMaps && (polygon->TexParam >> 26) & 0x7)
             {
-                Texcache.GetTexture(gpu, polygon->TexParam, polygon->TexPalette, variant.Texture, prevTexLayer, textureLastVariant);
+                Texcache.GetTexture(polygon->TexParam, polygon->TexPalette, variant.Texture, prevTexLayer, textureLastVariant);
                 bool wrapS = (polygon->TexParam >> 16) & 1;
                 bool wrapT = (polygon->TexParam >> 17) & 1;
                 bool mirrorS = (polygon->TexParam >> 18) & 1;

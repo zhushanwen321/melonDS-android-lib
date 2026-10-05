@@ -876,7 +876,7 @@ void EmuThread::updateRenderer()
                 emuInstance->nds->GPU.SetRenderer3D(GLRenderer::New());
                 break;
             case renderer3D_OpenGLCompute:
-                emuInstance->nds->GPU.SetRenderer3D(ComputeRenderer::New());
+                emuInstance->nds->GPU.SetRenderer3D(ComputeRenderer::New(emuInstance->nds->GPU));
                 break;
             default: __builtin_unreachable();
         }
