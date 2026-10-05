@@ -87,6 +87,8 @@ if (ENABLE_GDBSTUB)
 endif()
 
 if (ENABLE_OGLRENDERER)
+    # Embed the OpenGL shader sources into build-time headers via cmake/MakeEmbed.cmake
+    add_subdirectory(OpenGL_shaders)
     target_sources(core PRIVATE
         GPU_OpenGL.cpp
         GPU_OpenGL_shaders.h
