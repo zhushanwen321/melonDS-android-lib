@@ -138,6 +138,9 @@ GLCompositor::GLCompositor(GLCompositor&& other) noexcept :
     Scale(other.Scale),
     ScreenH(other.ScreenH),
     ScreenW(other.ScreenW),
+    OutputTex3D(other.OutputTex3D),
+    CaptureOutput128Tex(other.CaptureOutput128Tex),
+    CaptureOutput256Tex(other.CaptureOutput256Tex),
     CompScaleLoc(other.CompScaleLoc),
     CompVertices(other.CompVertices),
     CompShader(other.CompShader),
@@ -162,6 +165,9 @@ GLCompositor& GLCompositor::operator=(GLCompositor&& other) noexcept
         Scale = other.Scale;
         ScreenH = other.ScreenH;
         ScreenW = other.ScreenW;
+        OutputTex3D = other.OutputTex3D;
+        CaptureOutput128Tex = other.CaptureOutput128Tex;
+        CaptureOutput256Tex = other.CaptureOutput256Tex;
         CompScaleLoc = other.CompScaleLoc;
         CompVertices = other.CompVertices;
 

@@ -83,6 +83,12 @@ public:
     void MapVRAM_H(u32 bank, u8 cnt) noexcept;
     void MapVRAM_I(u32 bank, u8 cnt) noexcept;
 
+    // fills a 16-entry array indexed by texture-memory block with the GPU-side
+    // display capture block occupying it, or -1; consumed by the accelerated 3D
+    // renderer to source capture-textured polygons. fork: no GPU-side capture
+    // pipeline, so this always reports no capture blocks
+    void GetCaptureInfo_Texture(int* info) noexcept;
+
     template<typename T>
     T ReadVRAM_LCDC(u32 addr) const noexcept
     {

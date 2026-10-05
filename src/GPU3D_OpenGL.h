@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2025 melonDS team
+    Copyright 2016-2026 melonDS team
 
     This file is part of melonDS.
 
@@ -22,11 +22,21 @@
 #include "GPU3D.h"
 #include "GPU_OpenGL.h"
 #include "OpenGLSupport.h"
+#include "GPU3D_TexcacheOpenGL.h"
+#include "NonStupidBitfield.h"
+
+#include <memory>
+#include <optional>
 
 namespace melonDS
 {
 class GPU;
+class GLCompositor;
 
+// Ported from upstream melonDS GLRenderer3D (906e9eb): CPU-side texture decode
+// through the Texcache pipeline instead of per-pixel decoding in the shader.
+// Kept the GLRenderer class name and the New()/SetRenderSettings(bool,int)/
+// GetScaleFactor() signatures consumed by the Android app layer.
 class GLRenderer : public Renderer3D
 {
 public:
@@ -56,6 +66,8 @@ private:
     // Used by New()
     GLRenderer(GLCompositor&& compositor) noexcept;
 
+    bool Init();
+
     // GL version requirements
     // * texelFetch: 3.0 (GLSL 1.30)     (3.2/1.50 for MS)
     // * UBO: 3.1
@@ -72,33 +84,54 @@ private:
         u32 EdgeIndicesOffset;
 
         u32 RenderKey;
+
+        GLuint TexID;
+        u32 TexRepeat;
     };
 
+    // fork composition layer; takes the role of the upstream orchestrating
+    // GLRenderer that GLRenderer3D accessed through its `Parent` reference
     GLCompositor CurGLCompositor;
+    GLCompositor& Parent;
     RendererPolygon PolygonList[2048] {};
 
-    bool BuildRenderShader(u32 flags, const std::string& vs, const std::string& fs);
-    void UseRenderShader(u32 flags);
+    bool TexEnable;
+
+    // fork: the Texcache needs a GPU&, which is only available once the
+    // renderer has been attached (SetCurrentRenderer calls Reset(GPU&));
+    // upstream constructs it in the constructor from gpu3D.GPU
+    std::optional<TexcacheOpenGL> Texcache;
+
+    // fork: upstream's Renderer3D base carries GPU&/GPU3D& references into the
+    // renderer; fork's base class does not, so the GPU3D being rendered is
+    // tracked here for the render pass
+    GPU3D* gpu3d = nullptr;
+
+    bool BuildRenderShader(bool wbuffer);
+    void UseRenderShader(bool wbuffer);
     void SetupPolygon(RendererPolygon* rp, Polygon* polygon) const;
-    u32* SetupVertex(const Polygon* poly, int vid, const Vertex* vtx, u32 vtxattr, u32* vptr) const;
-    void BuildPolygons(RendererPolygon* polygons, int npolys);
+    u32* SetupVertex(const Polygon* poly, int vid, const Vertex* vtx, u32 vtxattr, u32 texlayer, u32* vptr) const;
+    void BuildPolygons(RendererPolygon* polygons, int npolys, int captureinfo[16]);
+    void SetupPolygonTexture(const RendererPolygon* poly) const;
     int RenderSinglePolygon(int i) const;
     int RenderPolygonBatch(int i) const;
     int RenderPolygonEdgeBatch(int i) const;
-    void RenderSceneChunk(const GPU3D& gpu3d, int y, int h);
+    void RenderSceneChunk(int y, int h);
+
 
     enum
     {
-        RenderFlag_WBuffer     = 0x01,
-        RenderFlag_Trans       = 0x02,
-        RenderFlag_ShadowMask  = 0x04,
-        RenderFlag_Edge        = 0x08,
+        RenderMode_Opaque = 0,
+        RenderMode_Translucent,
+        RenderMode_ShadowMask,
     };
 
 
     GLuint ClearShaderPlain {};
+    GLuint ClearShaderBitmap {};
 
-    GLuint RenderShader[16] {};
+    GLuint RenderShader[2] {};
+    GLint RenderModeULoc = 0;
     GLuint CurShaderID = -1;
 
     GLuint FinalPassEdgeShader {};
@@ -125,11 +158,16 @@ private:
     GLuint ClearVertexBufferID = 0, ClearVertexArrayID {};
     GLint ClearUniformLoc[4] {};
 
+    GLint ClearBitmapULoc[2] {};
+    GLuint ClearBitmapTex[2] {};
+    u32* ClearBitmap[2] {};
+    u8 ClearBitmapDirty = 0x3;
+
     // vertex buffer
     // * XYZW: 4x16bit
     // * RGBA: 4x8bit
     // * ST: 2x16bit
-    // * polygon data: 3x32bit (polygon attrib, texture VRAM offset, (texture attrib (low 16 bit), texture palette (high 16 bit))
+    // * polygon data: 3x32bit (polygon/texture attributes)
     //
     // polygon attributes:
     // * bit4-7, 11, 14-15, 24-29: POLYGON_ATTR
@@ -148,18 +186,20 @@ private:
 
     const u32 EdgeIndicesOffset = 2048 * 30;
 
-    GLuint TexMemID {};
-    GLuint TexPalMemID {};
-
     int ScaleFactor {};
     bool BetterPolygons {};
     int ScreenW {}, ScreenH {};
 
     GLuint ColorBufferTex {}, DepthBufferTex {}, AttrBufferTex {};
+
+    GLuint MainFramebuffer {};
+
+    // fork: display capture readback path, consumed by GPU2D_Soft through
+    // PrepareCaptureFrame()/GetLine(); upstream returns nullptr from GetLine()
+    // because its capture runs entirely on the GPU
+    GLuint DownscaleFramebuffer {};
     GLuint DownScaleBufferTex {};
     GLuint PixelbufferID {};
-
-    GLuint MainFramebuffer {}, DownscaleFramebuffer {};
     u32 Framebuffer[256*192] {};
 };
 }

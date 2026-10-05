@@ -1186,4 +1186,16 @@ bool GPU::MakeVRAMFlat_BOBJExtPalCoherent(NonStupidBitField<8*1024/VRAMDirtyGran
 {
     return CopyLinearVRAM<8*1024>(VRAMFlat_BOBJExtPal, &VRAMMap_BOBJExtPal, dirty, &GPU::ReadVRAM_BOBJExtPal<u64>);
 }
+
+void GPU::GetCaptureInfo_Texture(int* info) noexcept
+{
+    // upstream (906e9eb GPU.cpp) reports the VRAMCaptureBlockFlags state so the
+    // 3D renderer can sample display captures straight from GPU textures. fork
+    // has no GPU-side capture pipeline: captures are written to VRAM by
+    // GPU2D_Soft::DoCapture on the CPU and reach the renderer's textures through
+    // the Texcache dirty-tracking pipeline, so no texture block ever hosts a
+    // live GPU-side capture here
+    for (int b = 0; b < 16; b++)
+        info[b] = -1;
+}
 }

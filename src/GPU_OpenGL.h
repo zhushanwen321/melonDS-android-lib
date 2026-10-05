@@ -42,6 +42,15 @@ public:
     void SetScaleFactor(int scale) noexcept;
     [[nodiscard]] int GetScaleFactor() const noexcept { return Scale; }
 
+    // hooks the upstream orchestrating GLRenderer exposed to its 3D renderer,
+    // introduced here in trimmed form for GLRenderer's Parent access
+    GLuint OutputTex3D {};           // 3D output texture, set by GLRenderer::Init()
+    GLuint CaptureOutput128Tex {};   // upstream GPU-side display capture input for
+    GLuint CaptureOutput256Tex {};   //   capture-textured polygons; fork has no GPU
+                                     //   capture pipeline (capture runs on the CPU and
+                                     //   reaches textures through the Texcache), so
+                                     //   these stay 0 and their samplers stay unused
+
     void Stop(const GPU& gpu) noexcept;
     void RenderFrame(const GPU& gpu, Renderer3D& renderer) noexcept;
     void SetOutputTexture(int buf, GLuint texture);
