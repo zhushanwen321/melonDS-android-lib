@@ -1286,7 +1286,7 @@ void GLRenderer::RenderSceneChunk(int y, int h)
         glBindBuffer(GL_ARRAY_BUFFER, ClearVertexBufferID);
         glBindVertexArray(ClearVertexArrayID);
 
-        if (gpu3d->RenderDispCnt & (1<<5))
+        if (false && gpu3d->RenderDispCnt & (1<<5)) // BISECT: edge marking temporarily disabled
         {
             // edge marking
             // TODO: depth/polyid values at screen edges
@@ -1298,7 +1298,7 @@ void GLRenderer::RenderSceneChunk(int y, int h)
             glDrawArrays(GL_TRIANGLES, 0, 2*3);
         }
 
-        if (gpu3d->RenderDispCnt & (1<<7))
+        if (false && gpu3d->RenderDispCnt & (1<<7)) // BISECT: fog temporarily disabled
         {
             // fog
 
