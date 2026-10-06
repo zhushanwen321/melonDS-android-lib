@@ -11,8 +11,8 @@ uniform uint uOpaquePolyID;
 
 smooth in vec2 fTexcoord;
 
-out vec4 oColor;
-out vec4 oAttr;
+layout(location = 0) out vec4 oColor;
+layout(location = 1) out vec4 oAttr;
 
 void main()
 {

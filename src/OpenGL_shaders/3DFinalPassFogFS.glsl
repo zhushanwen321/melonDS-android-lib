@@ -18,7 +18,7 @@ layout(std140) uniform uConfig
     int uFogShift;
 };
 
-out vec4 oColor;
+layout(location = 0) out vec4 oColor;
 
 vec4 CalculateFog(float depth)
 {

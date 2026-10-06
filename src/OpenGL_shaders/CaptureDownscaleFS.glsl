@@ -8,7 +8,7 @@ uniform int uInputLayer;
 
 smooth in vec2 fTexcoord;
 
-out vec4 oColor;
+layout(location = 0) out vec4 oColor;
 
 void main()
 {

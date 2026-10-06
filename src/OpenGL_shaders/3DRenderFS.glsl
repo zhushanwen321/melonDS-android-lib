@@ -29,8 +29,8 @@ flat in ivec3 fPolygonAttr;
 smooth in float fZ;
 #endif
 
-out vec4 oColor;
-out vec4 oAttr;
+layout(location = 0) out vec4 oColor;
+layout(location = 1) out vec4 oAttr;
 
 vec4 FinalColor()
 {

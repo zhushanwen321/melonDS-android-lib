@@ -18,7 +18,7 @@ layout(std140) uniform uConfig
     int uFogShift;
 };
 
-out vec4 oColor;
+layout(location = 0) out vec4 oColor;
 
 // make up for crapo zbuffer precision
 bool isless(float a, float b)

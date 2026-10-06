@@ -20,7 +20,7 @@ layout(std140) uniform ubCaptureConfig
 
 smooth in vec4 fTexcoord;
 
-out vec4 oColor;
+layout(location = 0) out vec4 oColor;
 
 float GetSrcAPos(float line)
 {
