@@ -51,7 +51,7 @@ void main()
 
     int polyid = int(attr.r * 63.0);
 
-    if (attr.g != 0)
+    if (attr.g != 0.0)
     {
         vec4 depthU = texelFetch(DepthBuffer, coord + ivec2(0,-scale), 0);
         vec4 attrU = texelFetch(AttrBuffer, coord + ivec2(0,-scale), 0);
