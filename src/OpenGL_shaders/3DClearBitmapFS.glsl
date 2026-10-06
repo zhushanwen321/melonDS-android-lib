@@ -18,7 +18,7 @@ void main()
 {
     vec2 pos = fTexcoord + uClearBitmapOffset;
 
-    vec4 color = vec4(texture(ClearBitmapColor, pos)) / vec4(63,63,63,31);
+    vec4 color = vec4(texture(ClearBitmapColor, pos)) / vec4(63.0,63.0,63.0,31.0);
     uint depth = texture(ClearBitmapDepth, pos).r;
     float fdepth = float(depth & 0xFFFFFFu) / 16777216.0;
 

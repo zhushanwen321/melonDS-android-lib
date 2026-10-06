@@ -43,7 +43,7 @@ vec4 FinalColor()
         if ((uDispCnt & (1<<1)) == 0)
         {
             // toon
-            vec3 tooncolor = uToonColors[int(vcol.r * 31)].rgb;
+            vec3 tooncolor = uToonColors[int(vcol.r * 31.0)].rgb;
             vcol.rgb = tooncolor;
         }
         else
@@ -60,10 +60,10 @@ vec4 FinalColor()
     }
     else
     {
-        vec3 texcoord = vec3(fTexcoord, fPolygonAttr.y);
+        vec3 texcoord = vec3(fTexcoord, float(fPolygonAttr.y));
         vec4 tcol;
         if (fPolygonAttr.z == 0)
-            tcol = vec4(texture(CurTexture, texcoord)) / vec4(63,63,63,31);
+            tcol = vec4(texture(CurTexture, texcoord)) / vec4(63.0,63.0,63.0,31.0);
         else if (fPolygonAttr.z == 1)
             tcol = texture(Capture128Texture, texcoord);
         else
@@ -86,7 +86,7 @@ vec4 FinalColor()
     {
         if ((uDispCnt & (1<<1)) != 0)
         {
-            vec3 tooncolor = uToonColors[int(vcol.r * 31)].rgb;
+            vec3 tooncolor = uToonColors[int(vcol.r * 31.0)].rgb;
             col.rgb = min(col.rgb + tooncolor, 1.0);
         }
     }
@@ -98,7 +98,7 @@ void main()
 {
     if (uRenderMode == 2)
     {
-        oColor = vec4(0,0,0,1);
+        oColor = vec4(0.0,0.0,0.0,1.0);
     }
     else
     {

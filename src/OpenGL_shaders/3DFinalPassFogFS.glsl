@@ -55,7 +55,7 @@ void main()
 {
     ivec2 coord = ivec2(gl_FragCoord.xy);
 
-    vec4 ret = vec4(0,0,0,0);
+    vec4 ret = vec4(0.0,0.0,0.0,0.0);
     vec4 depth = texelFetch(DepthBuffer, coord, 0);
     vec4 attr = texelFetch(AttrBuffer, coord, 0);
 
