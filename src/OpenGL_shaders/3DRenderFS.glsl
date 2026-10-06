@@ -106,7 +106,7 @@ void main()
         if (uRenderMode == 0)
         {
             // opaque pixels
-            if (col.a < 30.5/31) discard;
+            if (col.a < 30.5/31.0) discard;
 
             oAttr.r = float((fPolygonAttr.x >> 24) & 0x3F) / 63.0;
             oAttr.g = 0.0;
@@ -116,8 +116,8 @@ void main()
         else
         {
             // translucent pixels
-            if (col.a < 0.5/31) discard;
-            if (col.a >= 30.5/31) discard;
+            if (col.a < 0.5/31.0) discard;
+            if (col.a >= 30.5/31.0) discard;
 
             oAttr.b = 0.0;
             oAttr.a = 1.0;
