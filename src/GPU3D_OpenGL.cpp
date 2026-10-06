@@ -24,6 +24,12 @@
 #include "NDS.h"
 #include "GPU.h"
 
+// GL_EXT_texture_swizzle; not part of the GLES3 core headers but
+// universally exposed by GLES3-era mobile drivers.
+#ifndef GL_TEXTURE_SWIZZLE_RGBA
+#define GL_TEXTURE_SWIZZLE_RGBA 0x8E46
+#endif
+
 namespace melonDS
 {
 
@@ -288,6 +294,13 @@ bool GLRenderer::Init()
     // color buffers
     glGenTextures(1, &ColorBufferTex);
     SetupDefaultTexParams(ColorBufferTex);
+    // The fork's GL compositor fetches the 3D layer with
+    // texelFetch(_3DTex, ...).bgra, expecting the BGRA byte layout the
+    // pre-rewrite renderer and the compute renderer both produce. The
+    // rewritten pipeline writes plain RGBA, so swizzle at sample time;
+    // blits and glReadPixels are unaffected by the swizzle.
+    GLint swizzleBGRA[4] = {GL_BLUE, GL_GREEN, GL_RED, GL_ALPHA};
+    glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleBGRA);
 
     // depth/stencil buffer
     glGenTextures(1, &DepthBufferTex);
