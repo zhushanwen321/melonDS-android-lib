@@ -1,13 +1,6 @@
 # 3D render path only: the 2D hardware-accelerated shaders
 # (2DLayerPre*/2DSprite*/2DCompositor*) are not part of this build.
 set(OPENGL_SHADER_FILES
-    FinalPassVS.glsl
-    FinalPassFS.glsl
-    CaptureVS.glsl
-    CaptureFS.glsl
-    CaptureDownscaleVS.glsl
-    CaptureDownscaleFS.glsl
-
     3DClearVS.glsl
     3DClearFS.glsl
     3DClearBitmapVS.glsl
