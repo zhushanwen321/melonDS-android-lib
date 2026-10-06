@@ -109,9 +109,9 @@ void main()
             if (col.a < 30.5/31) discard;
 
             oAttr.r = float((fPolygonAttr.x >> 24) & 0x3F) / 63.0;
-            oAttr.g = 0;
+            oAttr.g = 0.0;
             oAttr.b = float((fPolygonAttr.x >> 15) & 0x1);
-            oAttr.a = 1;
+            oAttr.a = 1.0;
         }
         else
         {
@@ -119,8 +119,8 @@ void main()
             if (col.a < 0.5/31) discard;
             if (col.a >= 30.5/31) discard;
 
-            oAttr.b = 0;
-            oAttr.a = 1;
+            oAttr.b = 0.0;
+            oAttr.a = 1.0;
         }
 
         oColor = col;

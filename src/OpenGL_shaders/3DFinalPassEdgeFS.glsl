@@ -75,7 +75,7 @@ void main()
             if ((uDispCnt & (1<<4)) != 0)
             ret.a = 0.5;
             else
-            ret.a = 1;
+            ret.a = 1.0;
         }
     }
 
